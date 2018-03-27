@@ -1,0 +1,22 @@
+{
+  "name": "3DEN/APIMonitor",
+  "description": "This will exercise the 3DEN API's",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Scott Yacko",
+      "email": "syacko@3denlounge.com"
+    }
+  ],
+  "require": {
+    "auth0/auth0-php": "5.1.0",
+    "monolog/monolog": "1.23.0",
+    "vlucas/phpdotenv": "1.0.6"
+  },
+  "autoload": {
+    "psr-4": {
+      "UTILITY\\": "src/classes"
+    }
+  }
+}
