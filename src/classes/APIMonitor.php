@@ -204,15 +204,20 @@ class APIMonitor
 		$client->addScope("https://www.googleapis.com/auth/gmail.compose");
 		$client->addScope("https://www.googleapis.com/auth/gmail.modify");
 		$client->addScope("https://www.googleapis.com/auth/gmail.readonly");
-		$client->setAuthConfig(file_get_contents(__DIR__ . $this->csFileName));
+		if (file_exists($this->csFileName))
+		{
+			$client->setAuthConfig($this->csFileName);
+		} else
+		{
+//  @todo THROW ERROR HERE - Client Id and Client Secret file with other needed settings for the Google_Client.
+		}
 		$client->setAccessType('offline');
 		$client->setApprovalPrompt('force');
 
 		// Load previously authorized credentials from a file.
-		$credentialsPath = __DIR__ . $this->creditialsFileName;
-		if (file_exists($credentialsPath))
+		if (file_exists($this->creditialsFileName))
 		{
-			$accessToken = json_decode(file_get_contents($credentialsPath), TRUE);
+			$accessToken = json_decode(file_get_contents($this->creditialsFileName), TRUE);
 		} else
 		{
 //
@@ -239,7 +244,7 @@ class APIMonitor
 		// Refresh the token if it's expired.
 		if ($client->isAccessTokenExpired())
 		{
-			file_put_contents($credentialsPath, json_encode($client->getAccessToken($client->getRefreshToken())));
+			file_put_contents($this->creditialsFileName, json_encode($client->getAccessToken($client->getRefreshToken())));
 		}
 		return $client;
 	}
@@ -304,11 +309,11 @@ class APIMonitor
 			throw new Exception('Missing MAPP or LAPP environment variable! System will not function without this being set.');
 		};
 		$dotEnv = new \Dotenv();
-		$dotEnv->load($envPath. '/utilities/.env/', 'APIMonitor.env');
+		$dotEnv->load($envPath . '/utilities/.env/', 'Utilities.env');
 		$this->version = $_ENV['APP_VERSION'];
 		$this->build = $_ENV['APP_BUILD'];
-		$this->creditialsFileName = $_ENV['APP_CREDENTIALSFILE'];
-		$this->csFileName = $_ENV['APP_CSFILE'];
+		$this->creditialsFileName = $envPath . '/utilities' . $_ENV['APP_CREDENTIALSFILE'];
+		$this->csFileName = $envPath . '/utilities' . $_ENV['APP_CSFILE'];
 
 		$this->accessTokenIssuer = $_ENV['API_ACCESSTOKEN_ISSUER'];
 		$apiEnvornments = str_replace('`', '"', $_ENV['API_ENVORNMENTS']);
